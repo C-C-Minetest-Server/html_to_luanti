@@ -1,7 +1,10 @@
 -- html_to_luanti/src/core.lua
 -- Parse HTML into Luanti hypertext
 -- Copyright (C) 2025  1F616EMO
--- SPDX-License-Identifier: LGPL-2.1-or-later
+-- SPDX-License-Identifier: LGPL-2.1-or-later'
+
+local sub, gsub = string.sub, string.gsub
+local utf8 = modlib.utf8
 
 local htmlparser = html_to_luanti.htmlparser
 
@@ -12,27 +15,25 @@ local tab = nbsp .. nbsp .. nbsp .. nbsp
 local H = core and core.hypertext_escape or function(s) return s end
 
 function html_to_luanti.html_unescape(s)
-    s = string.gsub(s, "&#160;", nbsp)
-
     -- Numeric entities
-    s = string.gsub(s, "&#(%d+);", function(num)
-        return string.char(tonumber(num))
+    s = gsub(s, "&#(%d+);", function(num)
+        return utf8.char(tonumber(num))
     end)
-    s = string.gsub(s, "&#x(%x+);", function(num)
-        return string.char(tonumber(num, 16))
+    s = gsub(s, "&#x(%x+);", function(num)
+        return utf8.char(tonumber(num, 16))
     end)
 
     -- HTML entities
-    s = string.gsub(s, "&nbsp;", nbsp)
-    s = string.gsub(s, "&lt;", "<")
-    s = string.gsub(s, "&gt;", ">")
-    s = string.gsub(s, "&quot;", '"')
-    s = string.gsub(s, "&amp;", "&")
+    s = gsub(s, "&nbsp;", nbsp)
+    s = gsub(s, "&lt;", "<")
+    s = gsub(s, "&gt;", ">")
+    s = gsub(s, "&quot;", '"')
+    s = gsub(s, "&amp;", "&")
     return s
 end
 
 local function remove_concat_lf(s)
-    return string.gsub(s, "\n+", "\n")
+    return gsub(s, "\n+", "\n")
 end
 
 function html_to_luanti.parse_childs(node, config)
@@ -47,9 +48,9 @@ function html_to_luanti.parse_childs(node, config)
 
         text =
             text ..
-            H(html_to_luanti.html_unescape(string.sub(raw_text, last_touched + 1, offsetted_openstart - 1)))
+            H(html_to_luanti.html_unescape(sub(raw_text, last_touched + 1, offsetted_openstart - 1)))
 
-        if html_to_luanti.block_elements[child.name] and string.sub(text, -1) ~= "\n" then
+        if html_to_luanti.block_elements[child.name] and sub(text, -1) ~= "\n" then
             text = text .. "\n"
         end
 
@@ -69,7 +70,7 @@ function html_to_luanti.parse_childs(node, config)
         last_touched = offsetted_closeend
     end
 
-    text = text .. H(html_to_luanti.html_unescape(string.sub(raw_text, last_touched + 1)))
+    text = text .. H(html_to_luanti.html_unescape(sub(raw_text, last_touched + 1)))
     text = string.trim(remove_concat_lf(text))
 
     return text
@@ -183,7 +184,7 @@ html_to_luanti.parse_list = function(list, ordered, config)
 
     for i, entry in ipairs(entries) do
         local text = html_to_luanti.parse_element(entry, config)
-        text = string.gsub(text, "\n", "\n" .. tab)
+        text = gsub(text, "\n", "\n" .. tab)
         text = string.trim(text)
         fs_hypertext[#fs_hypertext + 1] =
             H(ordered and (nbsp .. tostring(i) .. "." .. nbsp) or list_marker) .. text
@@ -206,9 +207,9 @@ html_to_luanti.element_rules = {
     a = function(node, config)
         if node.attributes.href then
             local href = node.attributes.href
-            if string.sub(href, 1, 1) == "/" then
+            if sub(href, 1, 1) == "/" then
                 href = (config.url_base or "") .. href
-            elseif string.sub(href, 1, 1) == "#" then
+            elseif sub(href, 1, 1) == "#" then
                 href = (config.anchor_base or "") .. href
             end
 

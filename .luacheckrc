@@ -25,6 +25,8 @@ read_globals = {
 
     "vector",
 
+    "modlib",
+
     table = {
         fields = {
             "copy",
