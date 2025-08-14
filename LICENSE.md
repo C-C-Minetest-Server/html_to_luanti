@@ -20,6 +20,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
+## License of screenshot
+
+Texts from <https://en.wikipedia.org/w/index.php?title=Luanti&oldid=1303877411>, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant).
+
 ## License of `htmlparser` (external library)
 
 Please check `htmlparser/doc/LICENSE`.
