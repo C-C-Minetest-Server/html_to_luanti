@@ -4,7 +4,6 @@
 -- SPDX-License-Identifier: LGPL-2.1-or-later'
 
 local sub, gsub = string.sub, string.gsub
-local utf8 = modlib.utf8
 
 local htmlparser = html_to_luanti.htmlparser
 
@@ -14,23 +13,7 @@ local tab = nbsp .. nbsp .. nbsp .. nbsp
 
 local H = core and core.hypertext_escape or function(s) return s end
 
-function html_to_luanti.html_unescape(s)
-    -- Numeric entities
-    s = gsub(s, "&#(%d+);", function(num)
-        return utf8.char(tonumber(num))
-    end)
-    s = gsub(s, "&#x(%x+);", function(num)
-        return utf8.char(tonumber(num, 16))
-    end)
-
-    -- HTML entities
-    s = gsub(s, "&nbsp;", nbsp)
-    s = gsub(s, "&lt;", "<")
-    s = gsub(s, "&gt;", ">")
-    s = gsub(s, "&quot;", '"')
-    s = gsub(s, "&amp;", "&")
-    return s
-end
+html_to_luanti.html_unescape = modlib.web.html.unescape
 
 local function remove_concat_lf(s)
     return gsub(s, "\n+", "\n")
